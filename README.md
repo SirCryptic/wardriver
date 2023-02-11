@@ -1,8 +1,7 @@
 # wardriver
 bash script to automate wardriving tasks.
 
-![image](https://user-images.githubusercontent.com/48811414/217430998-6e4668c5-c4ae-4207-a21e-0d227d47c5ce.png)
-
+![image](https://user-images.githubusercontent.com/48811414/218281429-eb8f9c28-a2cb-41ca-b4b5-98179f4ae4e7.png)
 
 
 Usage:
