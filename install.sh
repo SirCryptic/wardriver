@@ -49,6 +49,16 @@ else
   echo -e "${GREEN}bluez-simple-agent found${NC}"
 fi
 
+# Check if aircrack-ng is installed
+if ! command -v aircrack-ng &> /dev/null; then
+  # Install aircrack-ng
+  echo -e "${RED}aircrack-ng not found, installing...${NC}"
+  sudo apt-get update
+  sudo apt-get install aircrack-ng
+  echo -e "${GREEN}aircrack-ng installed${NC}"
+else
+  echo -e "${GREEN}aircrack-ng found${NC}"
+fi
 # Make the script executable
 chmod +x wardriver.sh
 
